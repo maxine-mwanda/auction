@@ -1,20 +1,11 @@
 package main
 
 import (
-	"API Auction/controllers"
+	"auction-api/controllers"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-)
-
-package main
-
-import (
-"api/controllers"
-"fmt"
-"github.com/gorilla/mux"
-"log"
-"net/http"
 )
 
 func main() {
@@ -22,9 +13,10 @@ func main() {
 	router := mux.NewRouter()
 	fmt.Println("Hey there")
 
-	router.HandleFunc("/users", controllers.User).Methods("GET", "POST")
+	router.HandleFunc("/users", controllers.Users).Methods("GET", "POST")
+	router.HandleFunc("/user", controllers.User).Methods("GET")
 	router.HandleFunc("/product", controllers.Product).Methods("GET")
-	router.HandleFunc("/user", controllers.Users).Methods("GET")
+	router.HandleFunc("/product", controllers.Product).Methods("POST")
 
 	err := http.ListenAndServe(port, router)
 	if err != nil {

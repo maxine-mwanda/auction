@@ -1,8 +1,8 @@
 package models
 
 import (
-	"API Auction/entities"
-	"API Auction/utils"
+	"auction-api/entities"
+	"auction-api/utils"
 	"fmt"
 )
 
@@ -26,7 +26,8 @@ func Create_user(user entities.NewUser) (id int64, err error) {
 }
 
 
-func FetchUser(user entities.NewUser) () {
+
+func FetchUser() (user entities.NewUser, err error) {
 	db, err := utils.Connecttodb()
 	if err != nil {
 		fmt.Println("unable to connect todb")
@@ -55,7 +56,7 @@ func Create_product(product entities.NewProduct) (id int64, err error) {
 		fmt.Println("unable to connect todb")
 		return
 	}
-	row, err := db.Exec(query, product.Type,product.Availability)
+	row, err := db.Exec(query, product.ProductType,product.Availability)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -67,20 +68,20 @@ func Create_product(product entities.NewProduct) (id int64, err error) {
 
 
 
-func FetchProduct(product entities.NewProduct) {
+func FetchProduct(productId string) (product entities.Product, err error) {
 	db, err := utils.Connecttodb()
 	if err != nil {
 		fmt.Println("unable to connect todb")
 		return
 	}
-	query := "select * from product where type = ?;"
-	row := db.QueryRow(query, product)
+	query := "select * from products where product_id = ?;"
+	row := db.QueryRow(query, productId)
 	if row == nil {
-		fmt.Println("unable to fetch list of available products")
+		fmt.Println("unable to fetch product", productId)
 		return
 	}
 
-	err = row.Scan(&product.type, &product.Availability)
+	err = row.Scan(&product.ProductID, &product.ProductName, &product.ProductType, &product.Availability)
 	if err != nil {
 		fmt.Println(err)
 		return

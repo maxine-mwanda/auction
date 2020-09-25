@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"API Auction/middleware"
-	"API Auction/entities"
-	"API Auction/models"
+	"auction-api/entities"
+	"auction-api/middleware"
+	"auction-api/models"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,7 +12,7 @@ import (
 
 func Users(writer http.ResponseWriter, request *http.Request) {
 	if request.Method == "GET" {
-		user, err := entities.NewUser{}, ""
+		user, err := models.FetchUser()
 		if err != nil {
 			fmt.Println("unable to fetch users")
 			middleware.JsonResponse(writer, http.StatusBadRequest, "error occured")
@@ -26,7 +26,7 @@ func Users(writer http.ResponseWriter, request *http.Request) {
 			middleware.JsonResponse(writer, http.StatusBadRequest, "error occured")
 			return
 		}
-		var user models.Create_user
+		var user entities.NewUser
 		err = json.Unmarshal(data, &user)
 		if err != nil {
 			fmt.Println("unable to read user to struct")
@@ -44,7 +44,7 @@ func Users(writer http.ResponseWriter, request *http.Request) {
 
 }
 
-func User(writer http.ResponseWriter, request *http.Request) {
+/*func User(writer http.ResponseWriter, request *http.Request) {
 	values := mux.Vars(request)
 	user := values["user"]
 	if user.Id == 0 {
@@ -52,11 +52,16 @@ func User(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	middleware.JsonResponse(writer, 200, user)
-}
+}*/
 
 func Product(writer http.ResponseWriter, request *http.Request) {
 	if request.Method == "GET" {
-		product, err := entities.Product, ""
+		productID := request.URL.Query().Get("product_id")
+		if productID == "" {
+			middleware.JsonResponse(writer, http.StatusBadRequest, "product id not given")
+			return
+		}
+		product, err := models.FetchProduct(productID)
 		if err != nil {
 			fmt.Println("unable to fetch products")
 			middleware.JsonResponse(writer, http.StatusBadRequest, "error occured")
@@ -64,11 +69,27 @@ func Product(writer http.ResponseWriter, request *http.Request) {
 		}
 		middleware.JsonResponse(writer, 200, product)
 	} else {
-		data, err := ioutil.ReadAll(request.Body)
+		_, err := ioutil.ReadAll(request.Body)
 		if err != nil {
 			fmt.Println("unable to read product")
 			middleware.JsonResponse(writer, http.StatusBadRequest, "error occured")
 			return
 		}
+
+	var product entities.NewProduct
+		err = json.Unmarshal(data, &product)
+	if err != nil {
+		fmt.Println("unable to read product to struct")
+		middleware.JsonResponse(writer, http.StatusBadRequest, "error occured")
+		return
 	}
+	id, err := models.Create_product(entities.NewProduct{})
+	if err != nil {
+		fmt.Println(err)
+		middleware.JsonResponse(writer, http.StatusBadRequest, "error occured")
+		return
+	}
+	middleware.JsonResponse(writer, 200, id)
+}
+
 }

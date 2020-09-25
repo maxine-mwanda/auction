@@ -15,15 +15,18 @@ type NewUser struct {
 	Email string `json:"email"`
 	Password string `json:"password"`
 	UserType string `json:"user_type"`
+	CreatedAt string `json:"created_at"`
 }
 
 type Product struct {
-	Id int64 `json:"id"`
-	Type string `json:"type"`
+	ProductID int64 `json:"product_id"`
+	ProductName string `json:"product_name"`
+	ProductType string `json:"type"`
 	Availability bool `json:"availability"`
 }
 
 type NewProduct struct {
-	Type string `json:"type"`
+	ProductName string `json:"product_name"`
+	ProductType string `json:"type"`
 	Availability bool `json:"availability"`
 }
